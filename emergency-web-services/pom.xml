@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <artifactId>emergency-web-services</artifactId>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>user_manager</module>
+        <module>emergency_manager</module>
+    </modules>
+
+    <packaging>pom</packaging>
+
+    <parent>
+        <artifactId>emergency-platform</artifactId>
+        <groupId>com.projet.pimpom.17</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+</project>
