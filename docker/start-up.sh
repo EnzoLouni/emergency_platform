@@ -10,3 +10,4 @@ echo "Loading configuration ..."
 dos2unix init-data/init-postgres-db.sh
 docker-compose up --no-start
 docker start pimpon_bdd
+docker exec -it pimpon_bdd ./docker-entrypoint-initdb.d/initdb.sh
