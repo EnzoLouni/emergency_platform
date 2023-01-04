@@ -118,6 +118,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.4.2.Final</version>
+        </dependency>
 <!--        <dependency>-->
 <!--            <groupId>io.projectreactor</groupId>-->
 <!--            <artifactId>reactor-test</artifactId>-->
