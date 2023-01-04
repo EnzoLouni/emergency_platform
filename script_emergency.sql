@@ -5,7 +5,7 @@ CREATE TABLE sensor
  sensor_status boolean NOT NULL,
  CONSTRAINT PK_SEN PRIMARY KEY ( sensor_id )
 );
-		
+
 CREATE TABLE station
 (
  station_id int,
@@ -22,7 +22,7 @@ VALUES
 	(4, 'Caserne Hannibal Barca', POINT(3,7)),
 	(5, 'Caserne George Sand', POINT(1,5)),
 	(6, 'Caserne des papiers', POINT(6,9));
-	
+
 CREATE TABLE team
 (
  team_id  serial,
@@ -125,15 +125,15 @@ VALUES
 	( 'lance', 11, 'mousse', 10),
 	( 'hache', 12, '', 4),
 	( 'hache', 9, '', 4);
-	
+
 INSERT INTO vehicle ( vehicle_capacity, vehicle_tank_capacity, vehicle_isheavyweight )
 VALUES
 	(12, 300, true),
 	(6, 120, false),
 	(4, 100, false),
 	(8, 260, true);
-	
-	
+
+
 INSERT INTO sensor ( sensor_coordinates, sensor_status )
 VALUES
 	(point(0,0), true),
@@ -146,7 +146,7 @@ VALUES
 	(point(7,0), true),
 	(point(8,0), true),
 	(point(9,0), true),
-	
+
 	(point(0,1), true),
 	(point(1,1), true),
 	(point(2,1), true),
@@ -157,7 +157,7 @@ VALUES
 	(point(7,1), true),
 	(point(8,1), true),
 	(point(9,1), true),
-	
+
 	(point(0,2), true),
 	(point(1,2), true),
 	(point(2,2), true),
@@ -168,7 +168,7 @@ VALUES
 	(point(7,2), true),
 	(point(8,2), true),
 	(point(9,2), true),
-	
+
 	(point(0,3), true),
 	(point(1,3), true),
 	(point(2,3), true),
@@ -179,7 +179,7 @@ VALUES
 	(point(7,3), true),
 	(point(8,3), true),
 	(point(9,3), true),
-	
+
 	(point(0,4), true),
 	(point(1,4), true),
 	(point(2,4), true),
@@ -190,7 +190,7 @@ VALUES
 	(point(7,4), true),
 	(point(8,4), true),
 	(point(9,4), true),
-	
+
 	(point(0,5), true),
 	(point(1,5), true),
 	(point(2,5), true),
