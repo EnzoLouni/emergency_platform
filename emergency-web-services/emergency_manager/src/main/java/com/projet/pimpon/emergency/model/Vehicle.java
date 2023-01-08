@@ -21,20 +21,21 @@ public class Vehicle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id_vehicle;
+    private Integer vehicleId;
 
     @NotNull
     private Integer vehicleCapacity;
+
+    private Integer teamId;
 
     @NotNull
     private Integer vehicleTankCapacity;
 
     @NotNull
-    private Boolean isHeavyWeight;
+    private Boolean vehicleIsheavyweight;
 
     @NotNull
-    private Coordinates coordinates;
+    private Integer vehicleQuality;
 
-    @NotNull
-    private Integer quality;
+    private Integer stationId;
 }

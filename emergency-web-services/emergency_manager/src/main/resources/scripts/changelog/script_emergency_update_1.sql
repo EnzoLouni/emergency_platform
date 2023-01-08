@@ -1,0 +1,2 @@
+UPDATE EQUIPMENT
+SET equipment_type = 'ECHELLE';

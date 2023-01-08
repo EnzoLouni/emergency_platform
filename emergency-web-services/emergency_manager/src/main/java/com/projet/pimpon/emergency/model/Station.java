@@ -1,5 +1,6 @@
 package com.projet.pimpon.emergency.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,21 +12,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
+
 @Data
 @Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "STATION", schema = "emergency")
-public class Station {
+public class Station implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id_station;
+    private Integer stationId;
 
+    @Column(name = "stationName")
     @NotNull
-    private String fullName;
+    private String stationName;
 
+    @Column(name = "stationCoordinates")
     @NotNull
-    private Coordinates coordinates;
+    private String stationCoordinates;
 }

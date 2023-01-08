@@ -1,6 +1,8 @@
 package com.projet.pimpon.emergency.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,23 +18,21 @@ import org.jetbrains.annotations.NotNull;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "AGENT", schema = "emergency")
-public class Agent {
-
+@Table(name = "EQUIPMENT", schema = "emergency")
+public class Equipment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer agentId;
+    private Integer equipmentId;
 
     @NotNull
-    private String agentName;
+    @Enumerated(EnumType.STRING)
+    private EquipmentType equipmentType;
 
-    private Integer teamId;
+    private Integer vehicleId;
+
+    @Enumerated(EnumType.STRING)
+    private Feature equipmentFeatures;
 
     @NotNull
-    private Integer agentExhaustion;
-
-    @NotNull
-    private Integer agentQuality;
-
-    private Integer stationId;
+    private Integer equipmentQuality;
 }

@@ -16,23 +16,15 @@ import org.jetbrains.annotations.NotNull;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "AGENT", schema = "emergency")
-public class Agent {
-
+@Table(name = "SENSOR", schema = "emergency")
+public class Sensor {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer agentId;
+    private Integer sensorId;
 
     @NotNull
-    private String agentName;
-
-    private Integer teamId;
+    private String sensorCoordinates;
 
     @NotNull
-    private Integer agentExhaustion;
-
-    @NotNull
-    private Integer agentQuality;
-
-    private Integer stationId;
+    private Boolean sensorStatus;
 }

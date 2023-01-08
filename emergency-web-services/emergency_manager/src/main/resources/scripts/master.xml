@@ -9,4 +9,20 @@
             relativeToChangelogFile="false"
     />
 
+    <include
+            file="/scripts/changelog/script_emergency_alter_1.sql"
+            relativeToChangelogFile="false"
+    />
+
+    <include
+            file="/scripts/changelog/script_emergency_alter_2.sql"
+            relativeToChangelogFile="false"
+    />
+
+    <include
+            file="/scripts/changelog/script_emergency_update_1.sql"
+            relativeToChangelogFile="false"
+    />
+
+
 </databaseChangeLog>

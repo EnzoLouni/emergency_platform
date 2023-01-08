@@ -23,15 +23,17 @@ public class Accident {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id_accident;
+    private Integer accidentId;
 
     @NotNull
-    private Integer intensity;
+    private Integer accidentIntensity;
+
+    private Integer teamId;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private AccidentStatus accidentStatus;
 
     @NotNull
-    private Coordinates coordinates;
+    private String accidentCoordinates;
 }
