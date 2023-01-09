@@ -1,10 +1,11 @@
 package com.projet.pimpon.emergency.controller.gateway;
 
 import org.springframework.integration.annotation.MessagingGateway;
+import org.springframework.integration.mqtt.support.MqttHeaders;
+import org.springframework.messaging.handler.annotation.Header;
 
-@MessagingGateway(defaultRequestChannel = "mqttInputBoundChannel")
+@MessagingGateway(defaultRequestChannel = "mqttOutputBoundChannel")
 public interface MqttGateway {
-    String getMqttMessage();
-    //void sendToMqtt(AccidentDto data, @Header(MqttHeaders.TOPIC) String topic);
+    void sendToMqtt(@Header(MqttHeaders.TOPIC) String topic, String data);
 }
 

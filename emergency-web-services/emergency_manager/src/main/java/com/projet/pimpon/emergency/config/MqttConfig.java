@@ -27,7 +27,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MqttConfig {
 
-    private static String SIMULATOR_TOPIC = "simulatorGetAccident";
+    private static String GET_ACCIDENT = "getAccident";
+    private static String EMERGENCY_SIMULATOR = "emergencySimulator";
     private static String URI = "tcp://localhost:1883";
     private static String USER_NAME = "emergency";
     private static String PASSWORD = "pimpon";
@@ -70,11 +71,14 @@ public class MqttConfig {
             @Override
             public void handleMessage(Message<?> message) throws MessagingException {
                 String topic = message.getHeaders().get(MqttHeaders.RECEIVED_TOPIC).toString();
-                if(topic.equals(SIMULATOR_TOPIC)) {
-                    log.info("This is our topic");
+                if(topic.equals(GET_ACCIDENT)) {
+                    log.info(message.getPayload().toString());
+                    accidentService.registerAccident(message.getPayload().toString());
                 }
-                log.info(message.getPayload().toString());
-                accidentService.registerAccident(message.getPayload().toString());
+                else if(topic.equals(EMERGENCY_SIMULATOR)) {
+                    log.info(message.getPayload().toString());
+                }
+                log.error("Unknown topic detected");
             }
         };
     }

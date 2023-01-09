@@ -57,6 +57,11 @@
             <artifactId>spring-integration-mqtt</artifactId>
             <version>6.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.mapbox.mapboxsdk</groupId>
+            <artifactId>mapbox-sdk-turf</artifactId>
+            <version>5.9.0-alpha.1</version>
+        </dependency>
 
 
     </dependencies>
