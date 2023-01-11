@@ -19,8 +19,7 @@ import java.util.List;
 public class SensorService {
     private final SensorRepository sensorRepository;
     private final SensorMapper sensorMapper;
-    public List<SensorDto> getSensorsTriggered(String sensors) {
-        String[] sensorsData = sensors.split("[)],");
+    public List<SensorDto> getSensorsTriggered(List<String> sensorsData) {
         List<SensorDto> sensorDtos = new ArrayList<>();
         for (String sensorData: sensorsData) {
             PGpoint pGpoint = new PGpoint();

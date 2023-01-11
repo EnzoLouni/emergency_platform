@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import org.postgresql.geometric.PGpoint;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class VehicleDto {
+public class VehicleDto implements Comparable{
     private Integer id;
     @JsonView({Views.ContextTeamView.class, Views.ContextStationView.class})
     private Integer capacity;
@@ -31,4 +32,9 @@ public class VehicleDto {
     private Integer quality;
     @JsonView({Views.ContextTeamView.class})
     private List<EquipmentDto> equipments;
+
+    @Override
+    public int compareTo(@NotNull Object o) {
+        return 0;
+    }
 }

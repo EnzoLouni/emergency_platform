@@ -4,8 +4,10 @@ import com.projet.pimpon.emergency.service.AccidentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.core.MessageProducer;
@@ -27,21 +29,22 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MqttConfig {
 
+    private static String SIMULATOR_EMERGENCY = "simulatorEmergency";
     private static String GET_ACCIDENT = "getAccident";
     private static String EMERGENCY_SIMULATOR = "emergencySimulator";
-    private static String URI = "tcp://localhost:1883";
-    private static String USER_NAME = "emergency";
-    private static String PASSWORD = "pimpon";
+    @Autowired
+    private Environment environment;
     private final AccidentService accidentService;
+
     @Bean
     public MqttPahoClientFactory mqttPahoClientFactory() {
         DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
         MqttConnectOptions options = new MqttConnectOptions();
         options.setServerURIs(new String[] {
-                URI
+                environment.getProperty("mqtt.address")
         });
-        options.setUserName(USER_NAME);
-        options.setPassword(PASSWORD.toCharArray());
+        options.setUserName(environment.getProperty("mqtt.username"));
+        options.setPassword(environment.getProperty("mqtt.password").toCharArray());
         options.setCleanSession(true);
 
         factory.setConnectionOptions(options);
@@ -57,7 +60,7 @@ public class MqttConfig {
     @Bean
     public MessageProducer inbound() {
         MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter("serverIn",mqttPahoClientFactory(),"#");
-        adapter.setCompletionTimeout(5000);
+        adapter.setCompletionTimeout(60000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(2);
         adapter.setOutputChannel(mqttInputBoundChannel());
@@ -73,12 +76,14 @@ public class MqttConfig {
                 String topic = message.getHeaders().get(MqttHeaders.RECEIVED_TOPIC).toString();
                 if(topic.equals(GET_ACCIDENT)) {
                     log.info(message.getPayload().toString());
-                    accidentService.registerAccident(message.getPayload().toString());
+                    accidentService.manageAlerts(message.getPayload().toString());
                 }
                 else if(topic.equals(EMERGENCY_SIMULATOR)) {
                     log.info(message.getPayload().toString());
                 }
-                log.error("Unknown topic detected");
+                else if(topic.equals(SIMULATOR_EMERGENCY)) {
+
+                }
             }
         };
     }

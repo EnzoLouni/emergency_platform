@@ -9,7 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.Collections;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Validated
 @Slf4j
@@ -19,16 +22,13 @@ public class VehicleService{
     private final VehicleRepository vehicleRepository;
     private final VehicleMapper vehicleMapper;
 
-    public VehicleDto mostRelevantVehicleIn(StationDto station) {
-        List<VehicleDto> vehicles = station.getVehicles();
-        VehicleDto mostRelevantVehicle = vehicles.get(0);
-        Integer quality = mostRelevantVehicle.getQuality();
-        for(VehicleDto vehicle: vehicles) {
-            if(quality < vehicle.getQuality()) {
-                quality = vehicle.getQuality();
-                mostRelevantVehicle = vehicle;
-            }
-        }
-        return mostRelevantVehicle;
+    public List<VehicleDto> mostRelevantVehiclesIn(StationDto station, Integer limit) {
+        List<VehicleDto> vehicles = vehicleRepository.findAllByTeamIdIsNull()
+                .stream()
+                .map(vehicleMapper::toVehicleDto)
+                .collect(toList());
+        vehicles = vehicles.stream().filter(vehicleDto -> station.getVehicles().contains(vehicleDto)).collect(toList());
+        Collections.sort(vehicles);
+        return vehicles.subList(0, limit);
     }
 }

@@ -4,13 +4,10 @@ import com.projet.pimpon.emergency.dao.AccidentRepository;
 import com.projet.pimpon.emergency.dao.TeamRepository;
 import com.projet.pimpon.emergency.dtos.dto.AccidentDto;
 import com.projet.pimpon.emergency.dtos.dto.AgentDto;
-import com.projet.pimpon.emergency.dtos.dto.StationDto;
-import com.projet.pimpon.emergency.dtos.dto.TeamDto;
 import com.projet.pimpon.emergency.dtos.dto.VehicleDto;
 import com.projet.pimpon.emergency.dtos.dtoapi.TeamDtoApi;
 import com.projet.pimpon.emergency.mapper.AccidentMapper;
 import com.projet.pimpon.emergency.mapper.TeamMapper;
-import com.projet.pimpon.emergency.model.AccidentStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,7 +15,6 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
-import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 @Validated
@@ -52,19 +48,25 @@ public class TeamService {
                 .collect(toList());
     }
 
-    public void createTeam(AccidentDto accident) {
-        StationDto relevantStation = stationService.mostRelevantStationFor(accident);
-        VehicleDto relevantVehicle = vehicleService.mostRelevantVehicleIn(relevantStation);
-        List<AgentDto> relevantAgents = agentService.mostRelevantAgentsIn(relevantStation, relevantVehicle);
-        TeamDto team = TeamDto.builder()
-                .accident(accident)//.station(relevantStation)
-                .vehicles(singletonList(relevantVehicle))
-                .agents(relevantAgents)
-                .quality(sumOfQualifications(relevantAgents, singletonList(relevantVehicle)))
-                .build();
-        accident.setStatus(AccidentStatus.PROCESSING);
-        accidentRepository.save(accidentMapper.toAccident(accident));
-        teamRepository.save(teamMapper.toTeam(team));
+    private void createTeams(List<AccidentDto> accidentToCreate) {
+        /*for(AccidentDto accidentDto: accidentToCreate) {
+            StationDto station = stationService.mostRelevantStationFor(accidentDto);
+            List<VehicleDto> vehicles = vehicleService.mostRelevantVehiclesIn(station, 1);
+            List<AgentDto> agents = new ArrayList<>();
+            for(VehicleDto vehicle: vehicles) {
+                List<AgentDto> agents
+                agents.addAll(agentService.mostRelevantAgentsIn(station, vehicle));
+
+            }
+            TeamDto newTeam = new TeamDto(null, accidentDto, agents, vehicles, 0);
+            teamRepository.save(teamMapper.toTeam(newTeam));
+            Accident accident = accidentMapper.toAccident(accidentDto);
+            accidentRepository.saveAccident(accident.getAccidentIntensity(), accident.getTeamId(), accident.getAccidentStatus(), accident.getAccidentCoordinates());
+        }*/
+    }
+
+    public void manage(List<AccidentDto> accidentsToCreate, List<AccidentDto> accidentToUpdate){
+        createTeams(accidentsToCreate);
     }
 
 }

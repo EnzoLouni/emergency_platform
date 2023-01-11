@@ -1,22 +1,26 @@
 package com.projet.pimpon.emergency.service;
 
-import com.mapbox.geojson.Point;
-import com.mapbox.geojson.Polygon;
-import com.mapbox.turf.TurfMeasurement;
-import com.mapbox.turf.TurfTransformation;
-import com.projet.pimpon.emergency.controller.gateway.MqttGateway;
 import com.projet.pimpon.emergency.dao.AccidentRepository;
 import com.projet.pimpon.emergency.dtos.dto.AccidentDto;
 import com.projet.pimpon.emergency.dtos.dto.SensorDto;
+import com.projet.pimpon.emergency.dtos.dto.Square;
 import com.projet.pimpon.emergency.mapper.AccidentMapper;
+import com.projet.pimpon.emergency.model.Accident;
 import com.projet.pimpon.emergency.model.AccidentStatus;
+import com.projet.pimpon.emergency.utils.SensorUtils;
+import com.projet.pimpon.emergency.utils.SquareUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.postgresql.geometric.PGpoint;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Validated
 @Slf4j
@@ -30,35 +34,66 @@ public class AccidentService {
 
     private final SensorService sensorService;
 
-    private final MqttGateway mqttGateway;
+    private final TeamService teamService;
 
-    private static Integer LEVELS = 10;
-    private static String SIMULATOR_EMERGENCY = "simulatorEmergency";
-
-    public void registerAccident(String sensors) {
-        List<SensorDto> sensorsTriggered = sensorService.getSensorsTriggered(sensors);
-        log.debug(sensorsTriggered.toString());
-        String[] sensorsData = sensors.split("[)],");
-        Integer intensity = 0;
+    private List<Integer> getIntensitiesDetected(List<String> sensorsData) {
+        List<Integer> intensities = new ArrayList<>();
         for (String sensorData: sensorsData) {
             Integer intensityDetected = Integer.parseInt(sensorData.substring(sensorData.lastIndexOf(',')+1, sensorData.lastIndexOf(')') != -1 ? sensorData.lastIndexOf(')') : sensorData.length()));
-            if(intensity < intensityDetected)
-                intensity = intensityDetected;
+            intensities.add(intensityDetected);
         }
-        Point point1 = Point.fromLngLat(sensorsTriggered.get(0).getCoordinates().x, sensorsTriggered.get(0).getCoordinates().y);
-        Point point2 = Point.fromLngLat(sensorsTriggered.get(1).getCoordinates().x, sensorsTriggered.get(1).getCoordinates().y);
-        Double distanceMeasure = TurfMeasurement.distance(point1, point2);
-        List<Double> distanceLevels = new ArrayList<>();
-        for(Integer i = 0; i < LEVELS; ++i) {
-            distanceLevels.add(distanceMeasure/10*i);
+        return intensities;
+    }
+
+    public void manageAlerts(String sensors) {
+        List<String> sensorsData = Arrays.stream(sensors.split("[)]")).toList();
+        List<SensorDto> sensorsTriggered = sensorService.getSensorsTriggered(sensorsData);
+        Collections.sort(sensorsTriggered);
+        List<List<SensorDto>> multiArraySensors = SensorUtils.toMultipleArray(sensorsTriggered);
+        List<Integer> intensitiesDetected = getIntensitiesDetected(sensorsData);
+        List<Square> squares = SquareUtils.toSquareList(multiArraySensors, intensitiesDetected);
+        List<AccidentDto> accidents = accidentRepository.findAll()
+                .stream()
+                .map(accidentMapper::toAccidentDto)
+                .collect(toList());
+        List<AccidentDto> accidentsToCreate = new ArrayList<>();
+        List<AccidentDto> accidentsToUpdate = new ArrayList<>();
+        List<AccidentDto> accidentsToDelete = new ArrayList<>();
+        for (AccidentDto accident : accidents) {
+            PGpoint accidentLocation = accident.getCoordinates();
+            squares.forEach(square -> {
+                PGpoint centerSquare = square.getCenter();
+                if (centerSquare.equals(accidentLocation)) {
+                    if (square.getIntensity().equals(0)) {
+                        accidentsToDelete.add(accident);
+                    } else if (!square.getIntensity().equals(accident.getIntensity())) {
+                        accident.setIntensity(square.getIntensity());
+                        accidentsToUpdate.add(accident);
+                    }
+                }
+            });
         }
-        List<Polygon> circles = new ArrayList<>();
-        for(SensorDto sensor: sensorsTriggered) {
-            Point point = Point.fromLngLat(sensor.getCoordinates().x, sensor.getCoordinates().y);
-            circles.add(TurfTransformation.circle(point, distanceMeasure));
-        }
-        AccidentDto accidentDto = new AccidentDto(null, intensity, AccidentStatus.NOT_TREATED, null);
-        //mqttGateway.sendToMqtt(SIMULATOR_EMERGENCY, "hello_world");
-        //accidentRepository.save(accidentMapper.toAccident(accidentDto));
+        squares = squares.stream().filter(square -> {
+            PGpoint squareCenter = square.getCenter();
+            Boolean isUpdated = accidentsToUpdate.stream().anyMatch(accidentDto -> accidentDto.getCoordinates().equals(squareCenter));
+            Boolean isDeleted = accidentsToDelete.stream().anyMatch(accidentDto -> accidentDto.getCoordinates().equals(squareCenter));
+            return !square.getIntensity().equals(0) || isUpdated || isDeleted;
+        }).collect(toList());
+        squares.forEach(square -> {
+            accidentsToCreate.add(new AccidentDto(null, square.getIntensity(), AccidentStatus.NOT_TREATED, square.getCenter()));
+        });
+        accidentsToCreate.forEach(accidentToCreate -> {
+            Accident accident = accidentMapper.toAccident(accidentToCreate);
+            accidentRepository.saveAccident(accident.getAccidentIntensity(), accident.getTeamId(), accident.getAccidentStatus(), accident.getAccidentCoordinates());
+        });
+        accidentsToUpdate.forEach(accidentToCreate -> {
+            Accident accident = accidentMapper.toAccident(accidentToCreate);
+            accidentRepository.updateAccident(accident.getAccidentId(), accident.getAccidentIntensity(), accident.getTeamId(), accident.getAccidentStatus(), accident.getAccidentCoordinates());
+        });
+        teamService.manage(accidentsToCreate, accidentsToUpdate);
+        /*accidentRepository.deleteAllById(accidentsToDelete
+                .stream()
+                .map(AccidentDto::getId)
+                .collect(toList()));*/
     }
 }
