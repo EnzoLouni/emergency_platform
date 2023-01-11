@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
     List<Vehicle> findAllByStationId(Integer stationId);
+    List<Vehicle> findAllByStationIdAndTeamIdIsNull(Integer stationId);
     List<Vehicle> findAllByTeamId(Integer teamId);
     List<Vehicle> findAllByTeamIdIsNull();
 }

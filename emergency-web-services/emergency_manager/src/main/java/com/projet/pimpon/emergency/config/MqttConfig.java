@@ -29,9 +29,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MqttConfig {
 
-    private static String SIMULATOR_EMERGENCY = "simulatorEmergency";
-    private static String GET_ACCIDENT = "getAccident";
-    private static String EMERGENCY_SIMULATOR = "emergencySimulator";
+    public static String SIMULATOR_EMERGENCY = "simulatorEmergency";
+    public static String GET_ACCIDENT = "getAccident";
+    public static String EMERGENCY_SIMULATOR = "emergencySimulator";
     @Autowired
     private Environment environment;
     private final AccidentService accidentService;

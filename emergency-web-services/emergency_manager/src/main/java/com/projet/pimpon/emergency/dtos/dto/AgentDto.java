@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 @Getter
 @Setter
@@ -15,11 +16,16 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AgentDto {
+public class AgentDto implements Comparable{
+    @JsonView({Views.ContextTeamView.class, Views.ContextStationView.class})
     private Integer id;
     @JsonView({Views.ContextTeamView.class, Views.ContextStationView.class})
     private String name;
     @JsonView({Views.ContextTeamView.class, Views.ContextStationView.class})
     private Integer exhaustion;
     private Integer quality;
+    @Override
+    public int compareTo(@NotNull Object o) {
+        return 0;
+    }
 }

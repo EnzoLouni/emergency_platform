@@ -20,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VehicleDto implements Comparable{
+    @JsonView({Views.ContextTeamView.class, Views.ContextStationView.class})
     private Integer id;
     @JsonView({Views.ContextTeamView.class, Views.ContextStationView.class})
     private Integer capacity;

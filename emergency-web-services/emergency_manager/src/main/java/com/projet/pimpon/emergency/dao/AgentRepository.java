@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface AgentRepository extends JpaRepository<Agent, Integer> {
     List<Agent> findAllByStationId(Integer stationId);
+    List<Agent> findAllByStationIdAndTeamIdIsNull(Integer stationId);
     List<Agent> findAllByTeamId(Integer teamId);
     List<Agent> findAllByTeamIdIsNull();
 }

@@ -17,6 +17,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccidentDtoApi {
+    @JsonView({Views.ContextTeamView.class})
     private Integer id;
     @JsonView({Views.ContextTeamView.class})
     private Integer intensity;

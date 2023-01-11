@@ -40,8 +40,8 @@ public abstract class StationMapper {
     @Mapping(target = "id", source = "station.stationId")
     @Mapping(target = "name", source = "station.stationName")
     @Mapping(target = "coordinates", source = "station.stationCoordinates")
-    @Mapping(target = "agents", expression = "java(agentRepository.findAllByStationId(station.getStationId()).stream().map(agentMapper::toAgentDto).collect(Collectors.toList()))")
-    @Mapping(target = "vehicles", expression = "java(vehicleRepository.findAllByStationId(station.getStationId()).stream().map(vehicleMapper::toVehicleDto).collect(Collectors.toList()))")
+    @Mapping(target = "agents", expression = "java(agentRepository.findAllByStationIdAndTeamIdIsNull(station.getStationId()).stream().map(agentMapper::toAgentDto).collect(Collectors.toList()))")
+    @Mapping(target = "vehicles", expression = "java(vehicleRepository.findAllByStationIdAndTeamIdIsNull(station.getStationId()).stream().map(vehicleMapper::toVehicleDto).collect(Collectors.toList()))")
     public abstract StationDtoApi toStationDtoApi(Station station);
 
     @Mapping(target = "stationId", source = "stationDto.id")

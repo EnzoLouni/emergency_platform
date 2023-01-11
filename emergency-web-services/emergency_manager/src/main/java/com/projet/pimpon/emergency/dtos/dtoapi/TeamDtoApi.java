@@ -20,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TeamDtoApi {
+    @JsonView({Views.ContextTeamView.class})
     private Integer id;
     @JsonView({Views.ContextTeamView.class})
     private AccidentDtoApi accident;

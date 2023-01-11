@@ -10,8 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Validated
 @Slf4j
@@ -23,7 +26,11 @@ public class AgentService{
     private final AgentMapper agentMapper;
 
     public List<AgentDto> mostRelevantAgentsIn(StationDto station, VehicleDto vehicle) {
-        List<AgentDto> agents = station.getAgents();
+        List<AgentDto> agents = agentRepository.findAllByTeamIdIsNull()
+                .stream()
+                .map(agentMapper::toAgentDto)
+                .collect(toList());
+        Collections.sort(agents);
         Integer vehicleCapacity = vehicle.getCapacity();
         Comparator<AgentDto> comparator = Comparator.comparingInt(AgentDto::getQuality);
         agents.sort(comparator);
