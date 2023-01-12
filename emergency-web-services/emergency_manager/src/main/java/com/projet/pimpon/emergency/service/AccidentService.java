@@ -17,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -48,7 +47,6 @@ public class AccidentService {
     public void manageAlerts(String sensors) {
         List<String> sensorsData = Arrays.stream(sensors.split("[)]")).toList();
         List<SensorDto> sensorsTriggered = sensorService.getSensorsTriggered(sensorsData);
-        Collections.sort(sensorsTriggered);
         List<List<SensorDto>> multiArraySensors = SensorUtils.toMultipleArray(sensorsTriggered);
         List<Integer> intensitiesDetected = getIntensitiesDetected(sensorsData);
         List<Square> squares = SquareUtils.toSquareList(multiArraySensors, intensitiesDetected);
@@ -66,7 +64,8 @@ public class AccidentService {
                 if (centerSquare.equals(accidentLocation)) {
                     if (square.getIntensity().equals(0)) {
                         accidentsToDelete.add(accident);
-                    } else if (!square.getIntensity().equals(accident.getIntensity())) {
+                    }
+                    else {
                         accident.setIntensity(square.getIntensity());
                         accidentsToUpdate.add(accident);
                     }
@@ -77,12 +76,12 @@ public class AccidentService {
             PGpoint squareCenter = square.getCenter();
             Boolean isUpdated = accidentsToUpdate.stream().anyMatch(accidentDto -> accidentDto.getCoordinates().equals(squareCenter));
             Boolean isDeleted = accidentsToDelete.stream().anyMatch(accidentDto -> accidentDto.getCoordinates().equals(squareCenter));
-            return !square.getIntensity().equals(0) || isUpdated || isDeleted;
+            return !square.getIntensity().equals(0) && !isUpdated && !isDeleted;
         }).collect(toList());
         squares.forEach(square -> {
             accidentsToCreate.add(new AccidentDto(null, square.getIntensity(), null,AccidentStatus.NOT_TREATED, square.getCenter()));
         });
-        teamService.manage(accidentsToCreate, accidentsToUpdate);
+        teamService.manage(accidentsToCreate);
         accidentsToUpdate.forEach(accidentToCreate -> {
             Accident accident = accidentMapper.toAccident(accidentToCreate);
             accidentRepository.updateAccident(accident.getAccidentId(), accident.getAccidentIntensity(), accident.getTeamId(), accident.getAccidentStatus().toString(), accident.getAccidentCoordinates());

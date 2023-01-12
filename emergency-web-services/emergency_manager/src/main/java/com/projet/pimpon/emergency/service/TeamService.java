@@ -1,5 +1,10 @@
 package com.projet.pimpon.emergency.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projet.pimpon.emergency.controller.gateway.MqttGateway;
 import com.projet.pimpon.emergency.dao.AccidentRepository;
 import com.projet.pimpon.emergency.dao.AgentRepository;
@@ -16,12 +21,14 @@ import com.projet.pimpon.emergency.mapper.AgentMapper;
 import com.projet.pimpon.emergency.mapper.TeamMapper;
 import com.projet.pimpon.emergency.mapper.VehicleMapper;
 import com.projet.pimpon.emergency.model.Accident;
+import com.projet.pimpon.emergency.model.AccidentStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.projet.pimpon.emergency.config.MqttConfig.EMERGENCY_SIMULATOR;
@@ -53,6 +60,27 @@ public class TeamService {
             qualitySum += agent.getQuality();
         }
         return vehicle.getQuality() * qualitySum;
+    }
+
+    private static List<TeamDto> parseJson(String data) {
+        ObjectMapper teamJsonMapper = new ObjectMapper();
+        teamJsonMapper.configure(DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY, true);
+        List<String> teamsString = Arrays.stream(data.split("[+]")).toList();
+        List<TeamDto> teamsParsed = new ArrayList<>();
+        try {
+            for(String team: teamsString) {
+                JsonNode jsonNode = teamJsonMapper.readTree(team);
+                Integer id = jsonNode.get("id").asInt();
+                List<VehicleDto> vehicles = teamJsonMapper.readValue(teamJsonMapper.writeValueAsString(jsonNode.get("vehicles")), new TypeReference<List<VehicleDto>>(){});
+                List<AgentDto> agents = teamJsonMapper.readValue(teamJsonMapper.writeValueAsString(jsonNode.get("agents")), new TypeReference<List<AgentDto>>(){});
+                Integer quality = jsonNode.get("quality").asInt();
+                teamsParsed.add(new TeamDto(id, null, agents, vehicles, quality));
+            }
+            return teamsParsed;
+        } catch (JsonProcessingException e) {
+            log.error("Cannot parse JSON to teams");
+            return new ArrayList<>();
+        }
     }
 
     public List<TeamDtoApi> getAllTeams() {
@@ -109,24 +137,44 @@ public class TeamService {
             if(vehicles != null && relevantAgents != null) {
                 TeamDto newTeam = new TeamDto(null, accidentDto, relevantAgents, vehicles, globalQuality);
                 TeamDto teamRegistered = teamMapper.toTeamDto(teamRepository.save(teamMapper.toTeam(newTeam)));
+                teamRegistered.setAccident(accidentDto);
+                teamRegistered.setVehicles(vehicles);
+                teamRegistered.setAgents(relevantAgents);
                 accidentDto.setTeamId(teamRegistered.getId());
                 Accident accident = accidentMapper.toAccident(accidentDto);
-  //              accidentRepository.saveAccident(accident.getAccidentIntensity(), accident.getTeamId(), accident.getAccidentStatus().toString(), accident.getAccidentCoordinates());
-                vehicleRepository.saveAll(vehicles.stream().map(vehicleMapper::toVehicle).collect(toList()));
-                agentRepository.saveAll(relevantAgents.stream().map(agentMapper::toAgent).collect(toList()));
+                accidentRepository.saveAccident(accident.getAccidentIntensity(), accident.getTeamId(), accident.getAccidentStatus().toString(), accident.getAccidentCoordinates());
+                vehicleRepository.updateTeamId(teamRegistered.getId(), vehicles.stream().map(VehicleDto::getId).collect(toList()));
+                agentRepository.updateTeamId(teamRegistered.getId(), relevantAgents.stream().map(AgentDto::getId).collect(toList()));
+                teamCreated.add(teamRegistered);
             }
             else {
                 Accident accident = accidentMapper.toAccident(accidentDto);
-                accidentRepository.save(accidentMapper.toAccident(accidentDto));
+                accidentRepository.saveAccident(accident.getAccidentIntensity(), accident.getTeamId(), accident.getAccidentStatus().toString(), accident.getAccidentCoordinates());
             }
         }
         return teamCreated;
     }
 
-    public void manage(List<AccidentDto> accidentsToCreate, List<AccidentDto> accidentToUpdate){
+    public void deleteTeam(String teams) {
+        List<TeamDto> teamsToDelete = parseJson(teams);
+        for(TeamDto teamDto: teamsToDelete) {
+            vehicleRepository.updateTeamId(null, teamDto.getVehicles().stream().map(VehicleDto::getId).collect(toList()));
+            agentRepository.updateTeamId(null, teamDto.getAgents().stream().map(AgentDto::getId).collect(toList()));
+            teamRepository.delete(teamMapper.toTeam(teamDto));
+        }
+    }
+
+    public void manage(List<AccidentDto> accidentsToCreate){
         List<TeamDto> teamsToSend = createTeams(accidentsToCreate);
+        ObjectMapper teamJsonMapper = new ObjectMapper();
         for(TeamDto teamDto: teamsToSend) {
-            mqttGateway.sendToMqtt(EMERGENCY_SIMULATOR, teamDto);
+            try {
+                teamDto.getAccident().setStatus(AccidentStatus.PROCESSING);
+                String teamJson = teamJsonMapper.writeValueAsString(teamDto);
+                mqttGateway.sendToMqtt(EMERGENCY_SIMULATOR, teamJson);
+            } catch (JsonProcessingException e) {
+                log.error("Cannot map team to JSON");
+            }
         }
     }
 

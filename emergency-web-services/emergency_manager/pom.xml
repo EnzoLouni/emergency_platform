@@ -7,11 +7,11 @@
     <parent>
         <artifactId>emergency-web-services</artifactId>
         <groupId>com.projet.pimpom</groupId>
-        <version>0.0.2-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>emergency_manager</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>EMERGENCY MANAGER</name>
     <description>Manage Simulator Com</description>
 

@@ -25,8 +25,12 @@ public class SquareUtils {
                 PGpoint p1 = line1.get(y).getCoordinates();
                 PGpoint p4 = line2.get(y+1).getCoordinates();
                 PGpoint center = new PGpoint(p4.x-(p4.x-p1.x)/2, p4.y-(p4.y-p1.y)/2);
-                Integer intensityOfSquare = (int)(Math.floor(intensitiesDetected.get(longitude*x + y) + intensitiesDetected.get(longitude*x + y + 1 + intensitiesDetected.get(longitude*(x+1) + y) +
-                        intensitiesDetected.get(longitude*(x+1) + y + 1)) / 4));
+                Integer intensityOfSquare = 0;
+                if(!intensitiesDetected.get((longitude)*x + y).equals(0) && !intensitiesDetected.get((longitude)*x + y + 1).equals(0) && !intensitiesDetected.get((longitude)*(x+1) + y).equals(0) &&
+                        !intensitiesDetected.get((longitude)*(x+1) + y + 1).equals(0)) {
+                    intensityOfSquare = (int)(Math.floor(intensitiesDetected.get(longitude*x + y) + intensitiesDetected.get(longitude*x + y + 1 + intensitiesDetected.get(longitude*(x+1) + y) +
+                            intensitiesDetected.get(longitude*(x+1) + y + 1)) / 4));
+                }
                 squares.add(new Square(center, intensityOfSquare));
             }
         }

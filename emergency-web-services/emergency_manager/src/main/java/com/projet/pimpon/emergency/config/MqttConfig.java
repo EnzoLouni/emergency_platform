@@ -1,6 +1,7 @@
 package com.projet.pimpon.emergency.config;
 
 import com.projet.pimpon.emergency.service.AccidentService;
+import com.projet.pimpon.emergency.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -35,6 +36,8 @@ public class MqttConfig {
     @Autowired
     private Environment environment;
     private final AccidentService accidentService;
+
+    private final TeamService teamService;
 
     @Bean
     public MqttPahoClientFactory mqttPahoClientFactory() {
@@ -82,7 +85,8 @@ public class MqttConfig {
                     log.info(message.getPayload().toString());
                 }
                 else if(topic.equals(SIMULATOR_EMERGENCY)) {
-
+                    log.info(message.getPayload().toString());
+                    teamService.deleteTeam(message.getPayload().toString());
                 }
             }
         };

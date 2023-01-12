@@ -25,7 +25,7 @@ public class SensorDto implements Comparable<SensorDto>{
         if(coordinates.equals(o.coordinates))
             return 0;
         else if(Double.compare(coordinates.y, o.coordinates.y) == 0)
-            return Double.compare(o.coordinates.x,coordinates.x);
+            return Double.compare(o.coordinates.x, coordinates.x);
         else
             return Double.compare(coordinates.y, o.coordinates.y);
     }

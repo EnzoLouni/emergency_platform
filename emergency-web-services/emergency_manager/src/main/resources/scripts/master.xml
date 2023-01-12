@@ -29,5 +29,10 @@
             relativeToChangelogFile="false"
     />
 
+    <include
+            file="/scripts/changelog/script_emergency_alter_3.sql"
+            relativeToChangelogFile="false"
+    />
+
 
 </databaseChangeLog>

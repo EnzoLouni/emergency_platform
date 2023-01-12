@@ -29,7 +29,6 @@ public abstract class VehicleMapper {
     @Mapping(target = "capacity", source = "vehicle.vehicleCapacity")
     @Mapping(target = "tankCapacity", source = "vehicle.vehicleTankCapacity")
     @Mapping(target = "isHeavy", source = "vehicle.vehicleIsheavyweight")
-    @Mapping(target = "coordinates", expression = "java(PGpointUtils.toPGpoint(stationRepository.findCoordinatesByStationId(vehicle.getStationId())))")
     @Mapping(target = "quality", source = "vehicle.vehicleQuality")
     @Mapping(target = "equipments", expression = "java(equipmentRepository.findAllByVehicleId(vehicle.getVehicleId()).stream().map(equipmentMapper::toEquipmentDto).collect(Collectors.toList()))")
     public abstract VehicleDto toVehicleDto(Vehicle vehicle);

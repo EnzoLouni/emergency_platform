@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import org.postgresql.geometric.PGpoint;
 
 import java.util.List;
 
@@ -28,8 +27,6 @@ public class VehicleDto implements Comparable<VehicleDto>{
     private Integer tankCapacity;
     @JsonView({Views.ContextTeamView.class, Views.ContextStationView.class})
     private Boolean isHeavy;
-    @JsonView({Views.ContextTeamView.class})
-    private PGpoint coordinates;
     private Integer quality;
     @JsonView({Views.ContextTeamView.class, Views.ContextStationView.class})
     private List<EquipmentDto> equipments;

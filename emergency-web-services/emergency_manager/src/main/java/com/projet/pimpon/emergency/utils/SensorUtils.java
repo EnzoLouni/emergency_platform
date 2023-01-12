@@ -15,14 +15,14 @@ public class SensorUtils {
     public static List<List<SensorDto>> toMultipleArray(List<SensorDto> sensors) {
         List<List<SensorDto>> multiArraySensors = new ArrayList<>();
         Double YCoordinate = sensors.get(0).getCoordinates().y;
-        Integer latitude = 0;
+        Integer longitude = 0;
         for(SensorDto sensorDto: sensors) {
             if(!YCoordinate.equals(sensorDto.getCoordinates().y)) {
                 break;
             }
-            latitude++;
+            longitude++;
         }
-        Integer longitude = sensors.size()/latitude;
+        Integer latitude = sensors.size()/longitude;
         for(int i = 0; i < latitude; ++i) {
             multiArraySensors.add(sensors.subList(i*longitude, (i+1)*longitude));
         }
