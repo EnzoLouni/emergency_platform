@@ -13,6 +13,7 @@ import static org.mapstruct.InjectionStrategy.FIELD;
 public interface AccidentMapper {
     @Mapping(target = "id", source = "accident.accidentId")
     @Mapping(target = "intensity", source = "accident.accidentIntensity")
+    @Mapping(target = "teamId", source = "accident.teamId")
     @Mapping(target = "status", source = "accident.accidentStatus")
     @Mapping(target = "coordinates", expression = "java(PGpointUtils.toPGpoint(accident.getAccidentCoordinates()))")
     AccidentDto toAccidentDto(Accident accident);
@@ -23,6 +24,7 @@ public interface AccidentMapper {
     AccidentDtoApi toAccidentDtoApi(Accident accident);
     @Mapping(target = "accidentId", source = "accidentDto.id")
     @Mapping(target = "accidentIntensity", source = "accidentDto.intensity")
+    @Mapping(target = "teamId", source = "accidentDto.teamId")
     @Mapping(target = "accidentStatus", source = "accidentDto.status")
     @Mapping(target = "accidentCoordinates", expression = "java(accidentDto.getCoordinates().getValue())")
     Accident toAccident(AccidentDto accidentDto);

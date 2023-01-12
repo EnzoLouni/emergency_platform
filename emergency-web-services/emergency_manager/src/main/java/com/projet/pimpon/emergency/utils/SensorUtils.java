@@ -17,8 +17,7 @@ public class SensorUtils {
         Double YCoordinate = sensors.get(0).getCoordinates().y;
         Integer latitude = 0;
         for(SensorDto sensorDto: sensors) {
-            if(!YCoordinate.equals(sensorDto.getCoordinates().x)) {
-                latitude++;
+            if(!YCoordinate.equals(sensorDto.getCoordinates().y)) {
                 break;
             }
             latitude++;

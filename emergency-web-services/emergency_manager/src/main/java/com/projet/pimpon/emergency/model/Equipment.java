@@ -30,8 +30,7 @@ public class Equipment {
 
     private Integer vehicleId;
 
-    @Enumerated(EnumType.STRING)
-    private Feature equipmentFeatures;
+    private String equipmentFeatures;
 
     @NotNull
     private Integer equipmentQuality;

@@ -18,6 +18,7 @@ import org.postgresql.geometric.PGpoint;
 public class AccidentDto {
     private Integer id;
     private Integer intensity;
+    private Integer teamId;
     private AccidentStatus status;
     private PGpoint coordinates;
 }

@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 public class Accident {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer accidentId;
 
     @NotNull

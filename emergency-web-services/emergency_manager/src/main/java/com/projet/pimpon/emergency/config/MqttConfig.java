@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 public class MqttConfig {
 
     public static String SIMULATOR_EMERGENCY = "simulatorEmergency";
-    public static String GET_ACCIDENT = "getAccident";
+    public static String GET_ACCIDENT = "emergencyAccidents";
     public static String EMERGENCY_SIMULATOR = "emergencySimulator";
     @Autowired
     private Environment environment;

@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AgentDto implements Comparable{
+public class AgentDto implements Comparable<AgentDto>{
     @JsonView({Views.ContextTeamView.class, Views.ContextStationView.class})
     private Integer id;
     @JsonView({Views.ContextTeamView.class, Views.ContextStationView.class})
@@ -25,7 +25,7 @@ public class AgentDto implements Comparable{
     private Integer exhaustion;
     private Integer quality;
     @Override
-    public int compareTo(@NotNull Object o) {
-        return 0;
+    public int compareTo(@NotNull AgentDto o) {
+        return Integer.compare(quality,o.quality);
     }
 }

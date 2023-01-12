@@ -80,20 +80,16 @@ public class AccidentService {
             return !square.getIntensity().equals(0) || isUpdated || isDeleted;
         }).collect(toList());
         squares.forEach(square -> {
-            accidentsToCreate.add(new AccidentDto(null, square.getIntensity(), AccidentStatus.NOT_TREATED, square.getCenter()));
-        });
-        accidentsToCreate.forEach(accidentToCreate -> {
-            Accident accident = accidentMapper.toAccident(accidentToCreate);
-            accidentRepository.saveAccident(accident.getAccidentIntensity(), accident.getTeamId(), accident.getAccidentStatus(), accident.getAccidentCoordinates());
-        });
-        accidentsToUpdate.forEach(accidentToCreate -> {
-            Accident accident = accidentMapper.toAccident(accidentToCreate);
-            accidentRepository.updateAccident(accident.getAccidentId(), accident.getAccidentIntensity(), accident.getTeamId(), accident.getAccidentStatus(), accident.getAccidentCoordinates());
+            accidentsToCreate.add(new AccidentDto(null, square.getIntensity(), null,AccidentStatus.NOT_TREATED, square.getCenter()));
         });
         teamService.manage(accidentsToCreate, accidentsToUpdate);
-        /*accidentRepository.deleteAllById(accidentsToDelete
+        accidentsToUpdate.forEach(accidentToCreate -> {
+            Accident accident = accidentMapper.toAccident(accidentToCreate);
+            accidentRepository.updateAccident(accident.getAccidentId(), accident.getAccidentIntensity(), accident.getTeamId(), accident.getAccidentStatus().toString(), accident.getAccidentCoordinates());
+        });
+        accidentRepository.deleteAllById(accidentsToDelete
                 .stream()
                 .map(AccidentDto::getId)
-                .collect(toList()));*/
+                .collect(toList()));
     }
 }

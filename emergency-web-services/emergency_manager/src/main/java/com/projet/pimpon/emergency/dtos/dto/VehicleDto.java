@@ -19,7 +19,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class VehicleDto implements Comparable{
+public class VehicleDto implements Comparable<VehicleDto>{
     @JsonView({Views.ContextTeamView.class, Views.ContextStationView.class})
     private Integer id;
     @JsonView({Views.ContextTeamView.class, Views.ContextStationView.class})
@@ -31,11 +31,11 @@ public class VehicleDto implements Comparable{
     @JsonView({Views.ContextTeamView.class})
     private PGpoint coordinates;
     private Integer quality;
-    @JsonView({Views.ContextTeamView.class})
+    @JsonView({Views.ContextTeamView.class, Views.ContextStationView.class})
     private List<EquipmentDto> equipments;
 
     @Override
-    public int compareTo(@NotNull Object o) {
-        return 0;
+    public int compareTo(@NotNull VehicleDto o) {
+        return Integer.compare(quality,o.quality);
     }
 }

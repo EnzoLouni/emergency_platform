@@ -9,7 +9,7 @@ CREATE TABLE sensor
 CREATE TABLE station
 (
  station_id int,
- station_name char(50) NOT NULL,
+ station_name varchar(50) NOT NULL,
  station_coordinates  point NOT NULL,
  CONSTRAINT PK_STA PRIMARY KEY ( station_id )
 );
@@ -42,7 +42,7 @@ CREATE TABLE accident
  accident_id serial,
  accident_intensity int NOT NULL,
  team_id int,
- accident_status char(50) NOT NULL,
+ accident_status varchar(50) NOT NULL,
  accident_coordinates numeric NOT NULL,
  CONSTRAINT PK_ACC PRIMARY KEY ( accident_id ),
  CONSTRAINT FK_ACC_TEAM FOREIGN KEY ( team_id ) REFERENCES team ( team_id )
@@ -56,7 +56,7 @@ CREATE INDEX FK_ACC_IDX ON accident
 CREATE TABLE agent
 (
  agent_id serial,
- agent_name char(50) NOT NULL,
+ agent_name varchar(50) NOT NULL,
  team_id int,
  agent_exhaustion int NOT NULL,
  agent_quality int NOT NULL,
@@ -89,9 +89,9 @@ CREATE INDEX FK_VEC_IX ON vehicle
 CREATE TABLE equipment
 (
  equipment_id serial,
- equipment_type char(50) NOT NULL,
+ equipment_type varchar(50) NOT NULL,
  vehicle_id int NOT NULL,
- features char(50),
+ features varchar(50),
  quality int NOT NULL,
  CONSTRAINT PK_EQ PRIMARY KEY ( equipment_id ),
  CONSTRAINT FK_EQ_VEC FOREIGN KEY ( vehicle_id ) REFERENCES vehicle ( vehicle_id )

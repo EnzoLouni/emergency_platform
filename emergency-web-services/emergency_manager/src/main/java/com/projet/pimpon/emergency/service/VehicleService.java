@@ -29,6 +29,6 @@ public class VehicleService{
                 .collect(toList());
         vehicles = vehicles.stream().filter(vehicleDto -> station.getVehicles().contains(vehicleDto)).collect(toList());
         Collections.sort(vehicles);
-        return vehicles.subList(0, limit);
+        return vehicles.size() > 1 ? vehicles.subList(0,limit) : vehicles;
     }
 }
